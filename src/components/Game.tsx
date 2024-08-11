@@ -10,6 +10,8 @@ import Food from "./Food";
 import Header from "./Header";
 import Score from "./Score";
 import Snake from "./Snake";
+import EkiliRelay from "ekilirelay";
+// import ekilirelay from '../utils/ekilirelay';
 
 
 const SNAKE_INITIAL_POSITION = [{ x: 5, y: 5 }];
@@ -31,8 +33,13 @@ export default function Game(): JSX.Element {
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
+  const sendMail = ()=>{
+    const ekilirelay = new EkiliRelay()
+    ekilirelay.sendEmail("support@ekilie.com","Test","Test","From: tach <tacherasasi@gmail.com>")
+  }
   useEffect(()=>{
     //show a modal to start the game on initial
+    sendMail()
   },[])
 
   useEffect(() => {
@@ -43,7 +50,6 @@ export default function Game(): JSX.Element {
       return () => clearInterval(intervalId);
     }
   }, [snake, isGameOver, isPaused]);
-
 
 
 

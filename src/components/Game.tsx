@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View, StatusBar, Alert, BackHandler } from "react-native";
+import { SafeAreaView, StyleSheet, View, StatusBar, Alert, BackHandler, Vibration } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import { Colors } from "../styles/colors";
 import { Direction, Coordinate, GestureEventType } from "../types/types";
 import { checkEatsFood } from "../utils/checkEatsFood";
 import { checkGameOver } from "../utils/checkGameOver";
 import { randomFoodPosition } from "../utils/randomFoodPosition";
+import { Audio } from "expo-av";
 import Food from "./Food";
 import Header from "./Header";
 import Score from "./Score";
 import Snake from "./Snake";
-import EkiliRelay from "ekilirelay";
+// import EkiliRelay from "ekilirelay";
 // import ekilirelay from '../utils/ekilirelay';
 
 
@@ -32,34 +33,54 @@ export default function Game(): JSX.Element {
   const [score, setScore] = useState<number>(0);
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [ sound , setSound ] = useState<Audio.Sound | null>(null)
 
-  const sendMail = ()=>{
-    const ekilirelay = new EkiliRelay()
-    ekilirelay.sendEmail("support@ekilie.com","Test","Test","From: tach <tacherasasi@gmail.com>")
-  }
-  useEffect(()=>{
-    //show a modal to start the game on initial
-    sendMail()
-  },[])
 
   useEffect(() => {
     if (!isGameOver) {
       const intervalId = setInterval(() => {
+        // playSound()
         !isPaused && moveSnake();
       }, MOVE_INTERVAL);
       return () => clearInterval(intervalId);
     }
   }, [snake, isGameOver, isPaused]);
 
+  useEffect(()=>{
+    playSound()
+  },[])
+
+  const playSound = async () =>{
+    const { sound } = await Audio.Sound.createAsync(
+      require('../../assets/music/stranger-things.mp3'), 
+      { shouldPlay: true, isLooping: true }
+    );
+    setSound(sound);
+    // Playing the sound
+    await sound.setVolumeAsync(0.25);
+    await sound.playAsync();
+
+  }
+  useEffect(() => {
+    // Clean up the sound on unmount
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
 
 
   const moveSnake = () => {
     const snakeHead = snake[0];
     const newHead = { ...snakeHead }; // create a new head object to avoid mutating the original head
 
+    //playing the sound
     // GAME OVER
     if (checkGameOver(snakeHead, GAME_BOUNDS)) {
+      
       setIsGameOver((prev) => !prev);
+      Vibration.vibrate(300)
       Alert.alert(
         "Game Over",
         "You have hit a wall",

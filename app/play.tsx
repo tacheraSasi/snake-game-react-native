@@ -1,10 +1,11 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Game from "../src/components/Game";
 
-export default function play() {
-  return (
-    <View>
-      <Text>play</Text>
-    </View>
-  )
-}
+const App = (): JSX.Element => (
+  <GestureHandlerRootView style={{ flex: 1 }}>
+    <Game />
+  </GestureHandlerRootView>
+);
+
+export default App;

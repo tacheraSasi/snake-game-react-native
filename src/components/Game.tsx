@@ -175,6 +175,7 @@ export default function Game(): JSX.Element {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop:12,
     flex: 1,
     backgroundColor: Colors.primary,
   },
